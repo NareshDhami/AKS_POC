@@ -1,5 +1,5 @@
 # AKS_POC
-Deploying microservices to Auzure kubernetes services using azure container services
+Deploying microservices to Auzure Kubernetes services using azure container services. Infrastructure was created using this code and was fully tested in azure cloud
 
 ## Repository layout
 

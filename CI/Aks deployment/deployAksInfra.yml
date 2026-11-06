@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: ndhami
+  name: your-self-hosted-agent-pool
 
 parameters:
   - name: tags
@@ -13,7 +13,7 @@ parameters:
       Project: "Demo"
   - name: azureSubscription
     type: string
-    default: 'Aks-deployment-test'
+    default: 'YOUR-AZURE-SERVICE-CONNECTION'
   - name: location
     displayName: 'Resource Location'
     type: string
@@ -25,7 +25,7 @@ parameters:
   - name: clusterName
     displayName: 'Name of the AKS Cluster'
     type: string
-    default: 'aks-cluster-01'
+    default: 'your-aks-cluster'
   - name: nodeVmSize
     displayName: 'VM Size for the Nodes'
     type: string
@@ -49,7 +49,7 @@ parameters:
   - name: nodeAdminUsername
     displayName: 'Admin username for the nodes'
     type: string
-    default: 'adminUserNameTest'
+    default: 'your-node-admin-username'
   - name: vnetAddressPrefixes
     displayName: 'Virtual Network Address Prefixes'
     type: object
@@ -62,11 +62,11 @@ parameters:
   - name: adGroupNames
     type: object
     default: 
-      'demo-group'
+      'your-entra-group-name'
   - name: resourceGroupName
     type: string
     default: 
-        'aks-rg' # make it dynamic for different environment.
+        'your-resource-group' # make it dynamic for different environment.
 
 variables: 
  - template: ../vars.yml
@@ -102,7 +102,7 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |    
           Write-Host "Script running as: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-          $objectIds = '55eeecf4-9464-4167-be4b-7c967a562df2'
+          $objectIds = 'YOUR-ENTRA-GROUP-OBJECT-ID'
           $output = ConvertTo-Json -Compress @($objectIds)
           Write-Host "##vso[task.setvariable variable=groupIds;isOutput=true]$output"
 

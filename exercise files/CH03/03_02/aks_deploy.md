@@ -1,6 +1,6 @@
 # Create a resource group and location variable
 
-resource_group=aks-rg
+resource_group=your-resource-group
 location=eastus
 
 # For our virtual network, let’s define the following variables
@@ -10,7 +10,7 @@ subnet_name=aks-subnet
 vnet_subnet_prefix=10.240.0.0/16
 
 # For our AKS resource, we have to define the following variables
-aks_cluster_name=aks-cluster-01
+aks_cluster_name=your-aks-cluster
 aks_control_plane_userid=$aks_cluster_name-usermsi
 aks_service_cidr=10.2.0.0/24
 aks_dns_service_ip=10.2.0.10

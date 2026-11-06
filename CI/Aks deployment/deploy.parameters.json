@@ -4,7 +4,7 @@
     "parameters": {
         "tags": {
             "value": {
-                "project": "aks-cluster-01",
+                "project": "your-aks-cluster",
                 "resource": "AKS"
             }
         },
@@ -12,7 +12,7 @@
             "value": "dev"
         },
         "clusterName": {
-            "value": "aks-cluster-01"
+            "value": "your-aks-cluster"
         },
         "nodeVmSize": {
             "value": "Standard_B2s"

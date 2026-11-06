@@ -2,7 +2,7 @@ trigger: none
 pr: none
 
 pool:
-  name: ndhami
+  name: your-self-hosted-agent-pool
 
 parameters:
   - name: configSettings
@@ -44,4 +44,3 @@ stages:
                 $settings = '$(parameters.configSettingsNext.value)' | ConvertFrom-Json
                 Write-Host $($settings)
         displayName: "Retrieve variables"
-

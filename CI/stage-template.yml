@@ -19,7 +19,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: ndhami
+      name: your-self-hosted-agent-pool
     steps:
     - task: replacetokens@6
       inputs:

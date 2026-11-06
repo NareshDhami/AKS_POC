@@ -8,7 +8,7 @@ az login
 az acr login --name <acrName>
 
 # Get ACR server address
-az acr list --resource-group aks-rg --query "[].{acrLoginServer:loginServer}" --output table
+az acr list --resource-group your-resource-group --query "[].{acrLoginServer:loginServer}" --output table
 
 # Tag the local copy of the UI Container Image
 docker tag ui:v1.0 acr19533.azurecr.io/ui:v1.0
@@ -39,4 +39,3 @@ kubectl get all -n ns-posthub--env
 
 # Describe a UI pod
 kubectl describe pod ui--env-fc58b4c97-2qjml -n ns-posthub--env
-

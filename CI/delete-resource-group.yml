@@ -7,12 +7,12 @@ trigger: none
 pr: none
 
 pool:
-  name: ndhami
+  name: your-self-hosted-agent-pool
 
 parameters:
   - name: azureSubscription
     type: string
-    default: 'Aks-deployment-test' # taken from service connections.
+    default: 'YOUR-AZURE-SERVICE-CONNECTION' # taken from service connections.
 
   - name: location
     displayName: 'Resource Location'
@@ -22,7 +22,7 @@ parameters:
   - name: ResourceGroups
     displayName: 'Resource Groups'
     type: object
-    default: ['aks-rg','NetworkWatcherRG', 'MA_defaultazuremonitorworkspace-eus_eastus_managed', 'defaultresourcegroup-eus']
+    default: []
 
 steps:
  - ${{ each group in parameters.ResourceGroups }}:

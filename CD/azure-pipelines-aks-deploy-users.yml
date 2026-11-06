@@ -5,7 +5,7 @@
 trigger: none
 
 pool:
-  name: ndhami
+  name: your-self-hosted-agent-pool
 
 resources:
   pipelines:

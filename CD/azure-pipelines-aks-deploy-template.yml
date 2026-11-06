@@ -18,7 +18,7 @@ jobs:
       displayName: Download deployment artifact from CI pipeline
       inputs:
         buildType: 'specific'
-        project: '0a673073-db8b-4139-ad38-eb3680cf8601'
+        project: 'YOUR-AZURE-DEVOPS-PROJECT-ID'
         definition: '${{ parameters.CIPipelineDefinitionId }}'
         buildVersionToDownload: 'latestFromBranch'
         branchName: 'refs/heads/master'
@@ -33,10 +33,9 @@ jobs:
       condition: succeeded()
       inputs:
         connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'AksServiceConnection' # Define KSE in service connection of project settings.
-        namespace: 'ns-posthubdev'
+        kubernetesServiceEndpoint: 'YOUR-KUBERNETES-SERVICE-CONNECTION' # Define KSE in service connection of project settings.
+        namespace: 'your-kubernetes-namespace'
         command: 'apply'
         arguments: -f "$(Pipeline.Workspace)\${{ parameters.DeploymentSpecFile }}"
         secretType: 'dockerRegistry'
         containerRegistryType: 'Azure Container Registry'
-

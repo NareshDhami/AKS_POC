@@ -24,7 +24,7 @@ stages:
   - job: Debug
     displayName: Display variable values
     pool:
-     name: ndhami
+     name: your-self-hosted-agent-pool
     steps:
     - script: |
        echo "dockerfilePath - ${{ variables.dockerfilePath }}; tag - ${{ variables.tag }}; image repository: ${{ variables.imageRepository }}"

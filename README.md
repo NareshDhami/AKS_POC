@@ -1,5 +1,15 @@
 # AKS_POC
-Deploying microservices to Auzure kubernetes services using azure container services
+## Quick overview
+
+- Provisions Azure cloud infrastructure using Bicep templates and Azure DevOps pipelines.
+- Creates an Azure Kubernetes Service (AKS) cluster to run containerized applications.
+- Configures virtual networking, Application Gateway ingress, managed identities, and access permissions.
+- Deploys the comments, posts, users, and posthub microservices alongside a frontend UI.
+- Packages the applications as Docker images and publishes them to Azure Container Registry (ACR).
+- Uses CI/CD pipelines to build images and deploy Kubernetes manifests to AKS, which pulls images from ACR.
+- Includes Kubernetes resources for MongoDB databases and NATS messaging between services.
+- Provides a manually triggered pipeline to delete selected resource groups and their resources.
+- This code was used to create infrastructure and was fully tested in Azure cloud.
 
 ## Repository layout
 

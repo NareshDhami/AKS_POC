@@ -1,0 +1,23 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger: none
+
+pool:
+  name: your-self-hosted-agent-pool
+
+resources:
+  pipelines:
+  - pipeline: ciPipeline
+    source: "microservice - posthub - CI"  # Name of the CI pipeline
+
+variables:
+ DeploymentSpecFile: "posthub.yaml"
+ CIPipelineDefinitionId: '9'
+
+stages:
+- template: azure-pipelines-aks-deploy-template.yml
+  parameters:
+    CIPipelineDefinitionId: ${{ variables.CIPipelineDefinitionId }}
+    DeploymentSpecFile: ${{ variables.DeploymentSpecFile }}

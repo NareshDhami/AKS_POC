@@ -1,0 +1,41 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+    - test
+  paths:
+    include:
+      - comments
+
+resources:
+- repo: self
+
+variables:
+- template: vars.yml
+
+stages:
+- stage: 
+  jobs:
+  - job: Print
+    displayName: Print variable values
+    pool:
+     name: your-self-hosted-agent-pool
+    steps:
+    - script: |
+       echo "dockerfilePath - ${{ variables.dockerfilePath }} tag - ${{ variables.tag }} image repository: ${{ variables.imageRepository }}"
+      displayName: "debug variables values."
+         
+- template: stage-template.yml
+  parameters:
+    dockerRegistryServiceConnection: ${{ variables.dockerRegistryServiceConnection }}
+    microservice: $(microservice)
+    ingressTokenizedYamlFile: 'ingress-service.yaml'
+    natsTokenizedYamlFile: 'nats-eventhub.yaml'
+    tag: ${{ variables.tag }}
+    containerRegistry: ${{ variables.containerRegistry}}

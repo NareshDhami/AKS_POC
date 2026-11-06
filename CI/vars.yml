@@ -1,0 +1,32 @@
+variables:
+  resourceGroupName: 'your-resource-group' #'rg-${{ parameters.env }}-${{ parameters.clusterName }}-${{ parameters.location }}'
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'YOUR-DOCKER-REGISTRY-SERVICE-CONNECTION-ID'
+  imageRepository: '$(microservice)-dev' # microservice is defined in the pipeline.
+  containerRegistry: 'your-acr-name.azurecr.io'
+  dockerfilePath: '$(microservice)/Dockerfile'
+  tag: 'v$(Build.BuildId)'
+  env: dev
+  kubernetesVersion: '1.31.1'
+  clusterName: 'your-aks-cluster'
+  nodePoolName: 'linux-dev-pool'
+  availabilityZones: 
+    -1
+  nodeVmSize: 'Standard_B2s' # 'Standard_B2s' 'Standard_D2s_V3' 'Standard_DS2_v2' 'Standard_D4s_V3' 'Standard_DS3_v2' 'Standard_DS4_v2' 'Standard_D8s_v3'
+  osDiskSizeGB: 30
+  osDiskType: 'Ephemeral'
+  agentpoolType: 'VirtualMachineScaleSets'
+  minNodeCount: 0
+  maxNodeCount: 1
+  enableAutoScaling: true
+  workspaceTier: 'PerGB2018' # minimum required size ('Free' 'Standalone' 'PerNode' 'PerGB2018' 'Premium')
+  nodeAdminUsername: 'your-node-admin-username'
+  vnetAddressPrefixes:  '10.240.0.0/16'
+  subnetAddressPrefix: '10.240.1.0/24'
+  adGroupNames: 'your-entra-group-name'
+  location: eastus
+  azureSubscription: 'YOUR-AZURE-SERVICE-CONNECTION' # taken from service connections.
+  systemNodePoolName: 'syslinux'
+  userNodePoolName: 'sptlinux'
+  appGatewayTier: 'Standard_v2'
+  publicipTier: 'Standard'

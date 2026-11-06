@@ -1,0 +1,31 @@
+param location string
+param aksClusterUserDefinedManagedIdentityName string
+param aadPodIdentityUserDefinedManagedIdentityName string
+param applicationGatewayUserDefinedManagedIdentityName string
+
+resource applicationGatewayUserDefinedManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: applicationGatewayUserDefinedManagedIdentityName
+  location: location
+}
+
+resource aksClusterUserDefinedManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: aksClusterUserDefinedManagedIdentityName
+  location: location
+}
+
+resource aadPodIdentityUserDefinedManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: aadPodIdentityUserDefinedManagedIdentityName
+  location: location
+}
+
+output applicationGatewayUserDefinedManagedIdentityId string = applicationGatewayUserDefinedManagedIdentity.id
+output aksClusterUserDefinedManagedIdentityId string = aksClusterUserDefinedManagedIdentity.id
+output aadPodIdentityUserDefinedManagedIdentityId string = aadPodIdentityUserDefinedManagedIdentity.id
+
+output applicationGatewayUserDefinedManagedIdentityTenantId string = applicationGatewayUserDefinedManagedIdentity.properties.tenantId
+output aksClusterUserDefinedManagedIdentityTenantId string = aksClusterUserDefinedManagedIdentity.properties.tenantId
+output aadPodIdentityUserDefinedManagedIdentityTenantId string = aadPodIdentityUserDefinedManagedIdentity.properties.tenantId
+
+output applicationGatewayUserDefinedManagedIdentityPrincipalId string = applicationGatewayUserDefinedManagedIdentity.properties.principalId
+output aksClusterUserDefinedManagedIdentityPrincipalId string = aksClusterUserDefinedManagedIdentity.properties.principalId
+output aadPodIdentityUserDefinedManagedIdentityPrincipalId string = aadPodIdentityUserDefinedManagedIdentity.properties.principalId

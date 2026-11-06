@@ -1,0 +1,40 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+    - test
+  paths:
+    include:
+      - ui
+
+resources:
+- repo: self
+
+variables:
+- template: vars.yml
+
+stages:
+- stage: 
+  jobs:
+  - job: Debug
+    displayName: Display variable values
+    pool:
+     name: your-self-hosted-agent-pool
+    steps:
+    - script: |
+       echo "dockerfilePath - ${{ variables.dockerfilePath }}; tag - ${{ variables.tag }}; image repository: ${{ variables.imageRepository }}"
+      displayName: "debug variables values."
+    
+- template: stage-template.yml
+  parameters:
+    dockerRegistryServiceConnection: ${{ variables.dockerRegistryServiceConnection }}
+    microservice: $(microservice)
+    ingressTokenizedYamlFile: 'ingress-service.yaml'
+    natsTokenizedYamlFile: 'nats-eventhub.yaml'
+    tag: ${{ variables.tag }}
+    containerRegistry: ${{ variables.containerRegistry}}

@@ -1,0 +1,80 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy microservices to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger: none
+
+pool:
+  name: your-self-hosted-agent-pool
+
+parameters:
+  - name: DeployAksInfra
+    type: boolean
+    default: false
+  - name: DeployComments
+    type: boolean
+    default: false
+  - name: DeployUsers
+    type: boolean
+    default: false
+  - name: DeployPosthub
+    type: boolean
+    default: false
+  - name: DeployPosts
+    type: boolean
+    default: false
+  - name: DeployUI
+    type: boolean
+    default: false
+
+variables:
+- template: '../CI/vars.yml'
+
+stages:
+- ${{ if eq(parameters.DeployAksInfra, 'true') }}:
+  - template: '../CI/Aks deployment/deployAksInfra.yml'
+    parameters:
+     osDiskSizeGB: ${{ variables.osDiskSizeGB }}
+     
+- stage: ServicesDeployment
+  displayName: Services deployment
+  jobs:
+  - ${{ if eq(parameters.DeployComments, 'true') }}:
+    - template: azure-pipelines-aks-deploy-template.yml
+      parameters:
+        PipelineName: "Comments"
+        CIPipelineDefinitionId: '7'
+        DeploymentSpecFile: "Comments.yaml"
+
+  - ${{ if eq(parameters.DeployUsers, 'true') }}:
+      - template: azure-pipelines-aks-deploy-template.yml
+        parameters:
+         PipelineName: "Users"
+         CIPipelineDefinitionId: '4'
+         DeploymentSpecFile: "Users.yaml"
+
+  - ${{ if eq(parameters.DeployPosthub, 'true') }}:
+      - template: azure-pipelines-aks-deploy-template.yml
+        parameters:
+         PipelineName: "posthub"
+         CIPipelineDefinitionId: '9'
+         DeploymentSpecFile: "posthub.yaml"
+
+  - ${{ if eq(parameters.DeployPosts, 'true') }}:
+      - template: azure-pipelines-aks-deploy-template.yml
+        parameters:
+         PipelineName: "posts"
+         CIPipelineDefinitionId: '8'
+         DeploymentSpecFile: "posts.yaml"
+
+  - ${{ if eq(parameters.DeployUI, 'true') }}:
+      - template: azure-pipelines-aks-deploy-template.yml
+        parameters:
+         PipelineName: "UI"
+         CIPipelineDefinitionId: '5'
+         DeploymentSpecFile: "ui.yaml"
+
+  - job: Finalize
+    condition: succeeded()
+    steps:
+    - script: echo "Finalization"

@@ -11,7 +11,7 @@ trigger:
     - test
   paths:
     include:
-      - comments
+      - microservices/comments
 
 resources:
 - repo: self

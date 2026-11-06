@@ -39,7 +39,7 @@ stages:
       inputs:
         command: buildAndPush
         repository: '${{ parameters.microservice }}'
-        dockerfile: '${{ parameters.microservice }}/Dockerfile'
+        dockerfile: '$(dockerfilePath)'
         containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
         tags: |
           ${{ parameters.tag }}

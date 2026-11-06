@@ -1,5 +1,8 @@
 # Replace ** in Docker File field
-$(microservice)
+$(serviceFolder)/Dockerfile
+
+Use `microservices/$(microservice)` for `serviceFolder`, or `ui` for the UI pipeline.
+Set `k8sFolder` to `infrastructure/k8s`.
 
 # Image name field
 $(Build.Repository.Name)-$(Build.SourceBranchName)-$(microservice):$(Build.BuildId)

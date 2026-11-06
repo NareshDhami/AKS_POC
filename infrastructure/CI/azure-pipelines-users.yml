@@ -7,7 +7,7 @@ trigger:
     - feature/*
   paths:
     include:
-      - users
+      - microservices/users
     exclude:
     - README.md
 

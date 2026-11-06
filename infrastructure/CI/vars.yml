@@ -4,7 +4,9 @@ variables:
   dockerRegistryServiceConnection: 'YOUR-DOCKER-REGISTRY-SERVICE-CONNECTION-ID'
   imageRepository: '$(microservice)-dev' # microservice is defined in the pipeline.
   containerRegistry: 'your-acr-name.azurecr.io'
-  dockerfilePath: '$(microservice)/Dockerfile'
+  serviceFolder: 'microservices/$(microservice)'
+  dockerfilePath: '$(serviceFolder)/Dockerfile'
+  k8sFolder: 'infrastructure/k8s'
   tag: 'v$(Build.BuildId)'
   env: dev
   kubernetesVersion: '1.31.1'

@@ -139,7 +139,7 @@ stages:
     - task: FileTransform@2
       displayName: "Transform: Generate deploy.parameters.json"
       inputs:
-        folderPath: '$(System.DefaultWorkingDirectory)/ci/Aks deployment'
+        folderPath: '$(System.DefaultWorkingDirectory)/infrastructure/CI/Aks deployment'
         xmlTransformationRules: ''
         jsonTargetFiles: 'deploy.parameters.json'
 
@@ -155,6 +155,6 @@ stages:
           az deployment group create `
             --name "${{ parameters.clusterName }}-deploy" `
             --resource-group "${{ parameters.resourceGroupName }}" `
-            --template-file "$(System.DefaultWorkingDirectory)\ci\Aks deployment\deploy.bicep" `
-            --parameters "$(System.DefaultWorkingDirectory)\ci\Aks deployment\deploy.parameters.json" `
+            --template-file "$(System.DefaultWorkingDirectory)\infrastructure\CI\Aks deployment\deploy.bicep" `
+            --parameters "$(System.DefaultWorkingDirectory)\infrastructure\CI\Aks deployment\deploy.parameters.json" `
             --verbose

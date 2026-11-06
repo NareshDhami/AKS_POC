@@ -10,15 +10,28 @@ trigger:
     - test
   paths:
     include:
-      - posthub
+      - ui
 
 resources:
 - repo: self
 
 variables:
 - template: vars.yml
+- name: serviceFolder
+  value: ui
 
 stages:
+- stage: 
+  jobs:
+  - job: Debug
+    displayName: Display variable values
+    pool:
+     name: your-self-hosted-agent-pool
+    steps:
+    - script: |
+       echo "dockerfilePath - ${{ variables.dockerfilePath }}; tag - ${{ variables.tag }}; image repository: ${{ variables.imageRepository }}"
+      displayName: "debug variables values."
+    
 - template: stage-template.yml
   parameters:
     dockerRegistryServiceConnection: ${{ variables.dockerRegistryServiceConnection }}

@@ -1,0 +1,42 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+parameters:
+  - name: PipelineName
+    type: string
+  - name: CIPipelineDefinitionId
+    type: string
+  - name: DeploymentSpecFile
+    type: string
+
+jobs:
+- job: ${{ parameters.PipelineName }}
+  steps:
+    - script: echo '${{ parameters.CIPipelineDefinitionId }}'
+      displayName: debug
+    - task: DownloadPipelineArtifact@2
+      displayName: Download deployment artifact from CI pipeline
+      inputs:
+        buildType: 'specific'
+        project: '0a673073-db8b-4139-ad38-eb3680cf8601'
+        definition: '${{ parameters.CIPipelineDefinitionId }}'
+        buildVersionToDownload: 'latestFromBranch'
+        branchName: 'refs/heads/master'
+        artifactName: 'drop'
+        targetPath: '$(Pipeline.Workspace)'
+
+    - script: echo "$(Pipeline.Workspace)"
+      displayName: Show Artifact Path
+
+    - task: Kubernetes@1
+      displayName: Deploy to AKS
+      condition: succeeded()
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'AksServiceConnection' # Define KSE in service connection of project settings.
+        namespace: 'ns-posthubdev'
+        command: 'apply'
+        arguments: -f "$(Pipeline.Workspace)\${{ parameters.DeploymentSpecFile }}"
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Azure Container Registry'
+

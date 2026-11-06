@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+    - test
+    - feature/*
+  paths:
+    include:
+      - users
+    exclude:
+    - README.md
+
+resources:
+- repo: self
+
+variables:
+- template: vars.yml
+
+stages:
+- template: stage-template.yml
+  parameters:
+    dockerRegistryServiceConnection: ${{ variables.dockerRegistryServiceConnection }}
+    microservice: $(microservice)
+    ingressTokenizedYamlFile: 'ingress-service.yaml'
+    natsTokenizedYamlFile: 'nats-eventhub.yaml'
+    tag: ${{ variables.tag }}
+    containerRegistry:  ${{ variables.containerRegistry }}

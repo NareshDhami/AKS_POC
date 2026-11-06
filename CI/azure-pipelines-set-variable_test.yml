@@ -1,0 +1,47 @@
+trigger: none
+pr: none
+
+pool:
+  name: ndhami
+
+parameters:
+  - name: configSettings
+    type: object
+    default:
+      appName: "MyApp"
+      environment: "production"
+      retries: 3
+  - name: configSettingsNext
+    type: object
+    default:
+           ["test"]
+
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: ProcessConfig
+    displayName: Process Configuration
+
+    steps:
+    - ${{ each item in parameters }}:
+      - task: PowerShell@2
+        continueOnError: true
+        inputs:
+          targetType: 'inline'
+          script: |
+            # Convert JSON string to PowerShell object
+            $parameterValue = '${{ convertToJson(item.value) }}' | ConvertFrom-Json
+            $parameterValueStr = $parameterValue | ConvertTo-Json -Compress
+            Write-Host "##vso[task.setvariable variable=parameters.${{ item.key }}.value]$parameterValueStr"
+        displayName: "Set Task Variable for ${{ item.key }}"
+
+      - task: PowerShell@2
+        continueOnError: true
+        inputs:
+          targetType: 'inline'
+          script: |
+                $settings = '$(parameters.configSettingsNext.value)' | ConvertFrom-Json
+                Write-Host $($settings)
+        displayName: "Retrieve variables"
+

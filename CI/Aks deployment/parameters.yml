@@ -1,0 +1,40 @@
+parameters: 
+  - name: env
+    type: string
+  - name: clusterName
+    type: string
+  - name: nodeVmSize
+    type: string
+  - name: osDiskSizeGB
+    type: number
+  - name: nodeCount
+    type: number
+  - name: maxNodeCount
+    type: number
+  - name: nodeAdminUsername
+    type: string
+  - name: publicsshKey
+    type: string
+  - name: workspaceTier
+    type: string
+  - name: subnetAddressPrefix
+    type: string
+  - name: adminGroupObjectIDs
+    type: string
+  - name: appGatewayTier
+    type: string
+  - name: publicipTier
+    type: string
+  - name: systemNodePoolName
+    type: string
+  - name: userNodePoolName
+    type: string
+
+steps:
+- ${{ each item in parameters }}:     
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host '##vso[task.setvariable variable=parameters.${{ item.key }}.value]${{ item.value }}'
+    displayName: "Set Variable 'parameters.${{ item.key }}.value' = '${{ item.value }}'"

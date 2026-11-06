@@ -1,0 +1,29 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  branches:
+    include:
+    - master
+    - dev
+    - test
+  paths:
+    include:
+      - posthub
+
+resources:
+- repo: self
+
+variables:
+- template: vars.yml
+
+stages:
+- template: stage-template.yml
+  parameters:
+    dockerRegistryServiceConnection: ${{ variables.dockerRegistryServiceConnection }}
+    microservice: $(microservice)
+    ingressTokenizedYamlFile: 'ingress-service.yaml'
+    natsTokenizedYamlFile: 'nats-eventhub.yaml'
+    tag: ${{ variables.tag }}
+    containerRegistry: ${{ variables.containerRegistry}}

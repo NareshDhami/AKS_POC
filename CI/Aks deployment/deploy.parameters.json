@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "tags": {
+            "value": {
+                "project": "aks-cluster-01",
+                "resource": "AKS"
+            }
+        },
+        "env": {
+            "value": "dev"
+        },
+        "clusterName": {
+            "value": "aks-cluster-01"
+        },
+        "nodeVmSize": {
+            "value": "Standard_B2s"
+        },
+        "osDiskSizeGB": {
+            "value": 30
+        },
+        "nodeCount": {
+            "value": 1
+        },
+        "maxNodeCount": {
+            "value": 1
+        },
+        "nodeAdminUsername": {
+            "value": "aksAdminUser"
+        },
+        "adminGroupObjectIDs": {
+            "value": []
+        },
+        "publicsshKey": {
+            "value": ""
+        },
+        "workspaceTier": {
+            "value": "PerGB2018"
+        },
+        "vnetAddressPrefixes": {
+            "value": [ "10.0.0.0/8" ]
+        },
+        "subnetAddressPrefix": {
+            "value": "10.240.0.0/16"
+        },
+        "appGatewayTier": {
+            "value": "Standard_vs"
+        },
+        "publicipTier": {
+            "value": "Standard"
+        },
+        "systemNodePoolName": {
+            "value": "systemVMNodePool"
+        },
+        "userNodePoolName": {
+            "value": "spotVMNodePool"
+        }                
+    }
+}

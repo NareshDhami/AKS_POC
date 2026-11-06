@@ -1,0 +1,71 @@
+parameters:
+  - name: dockerRegistryServiceConnection
+    type: string
+  - name: microservice
+    type: string
+  - name: ingressTokenizedYamlFile
+    type: string
+  - name: natsTokenizedYamlFile
+    type: string
+  - name: tag
+    type: string
+  - name: containerRegistry
+    type: string
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      name: ndhami
+    steps:
+    - task: replacetokens@6
+      inputs:
+        sources: |
+          $(k8sFolder)/prod-manifests/${{ parameters.microservice }}.yaml
+          $(k8sFolder)/prod-manifests/${{ parameters.ingressTokenizedYamlFile }}
+          $(k8sFolder)/${{ parameters.natsTokenizedYamlFile }}
+          $(k8sFolder)/${{ parameters.microservice }}-mongo.yaml
+          ui/.env
+        tokenPattern: 'custom'
+        tokenPrefix: '--'
+        tokenSuffix: '--'
+        ifNoFilesFound: 'error'
+
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: '${{ parameters.microservice }}'
+        dockerfile: '${{ parameters.microservice }}/Dockerfile'
+        containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
+        tags: |
+          ${{ parameters.tag }}
+
+    - task: replacetokens@6
+      inputs:
+        sources: |
+          $(k8sFolder)/prod-manifests/${{ parameters.microservice }}.yaml
+        tokenPattern: 'doubleunderscores'
+        missingVarAction: 'replace'
+        missingVarDefault: '${{ parameters.containerRegistry }}/${{parameters.microservice}}:${{ parameters.tag }}'
+
+    - task: CopyFiles@2
+      inputs:
+        Contents: |
+          $(k8sFolder)/prod-manifests/${{ parameters.microservice }}.yaml
+          $(k8sFolder)/prod-manifests/${{ parameters.ingressTokenizedYamlFile }}
+          $(k8sFolder)/${{ parameters.natsTokenizedYamlFile }}
+          $(k8sFolder)/${{ parameters.microservice }}-mongo.yaml
+          ui/.env
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+        OverWrite: true
+        flattenFolders: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'

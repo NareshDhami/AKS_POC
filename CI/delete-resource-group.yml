@@ -1,0 +1,36 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+pr: none
+
+pool:
+  name: ndhami
+
+parameters:
+  - name: azureSubscription
+    type: string
+    default: 'Aks-deployment-test' # taken from service connections.
+
+  - name: location
+    displayName: 'Resource Location'
+    type: string
+    default: 'eastus'
+
+  - name: ResourceGroups
+    displayName: 'Resource Groups'
+    type: object
+    default: ['aks-rg','NetworkWatcherRG', 'MA_defaultazuremonitorworkspace-eus_eastus_managed', 'defaultresourcegroup-eus']
+
+steps:
+ - ${{ each group in parameters.ResourceGroups }}:
+    - task: PowerShell@2
+      displayName: 'Delete resources in ${{ group }}'
+      continueOnError: true
+      inputs:
+        targetType: 'inline'
+        script: |
+          az group delete --name "${{ group }}" --yes --no-wait
+          Write-host "Resource group "${{ group }}" deletion initiated."

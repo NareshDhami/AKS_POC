@@ -1,0 +1,160 @@
+trigger: none
+
+pool:
+  name: ndhami
+
+parameters:
+  - name: tags
+    displayName: 'Tags'
+    type: object
+    default:
+      Environment: "Dev"
+      Resource: "AKS"
+      Project: "Demo"
+  - name: azureSubscription
+    type: string
+    default: 'Aks-deployment-test'
+  - name: location
+    displayName: 'Resource Location'
+    type: string
+    default: 'eastus'
+  - name: env
+    displayName: 'Environment(dev,test,prod)'
+    type: string
+    default: 'dev'
+  - name: clusterName
+    displayName: 'Name of the AKS Cluster'
+    type: string
+    default: 'aks-cluster-01'
+  - name: nodeVmSize
+    displayName: 'VM Size for the Nodes'
+    type: string
+    default: 'Standard_B2s'
+  - name: osDiskSizeGB
+    displayName: 'Size of OS disk (0 means use vm cache size)'
+    type: number
+    default: 30
+  - name: minNodeCount
+    displayName: 'The number of nodes'
+    type: number
+    default: 1
+  - name: maxNodeCount
+    displayName: 'Max node to scale out to'
+    type: number
+    default: 1
+  - name: workspaceTier
+    displayName: Log Analytics Workspace Tier
+    type: string
+    default: 'PerGB2018'
+  - name: nodeAdminUsername
+    displayName: 'Admin username for the nodes'
+    type: string
+    default: 'adminUserNameTest'
+  - name: vnetAddressPrefixes
+    displayName: 'Virtual Network Address Prefixes'
+    type: object
+    default: 
+      ['10.240.0.0/16']
+  - name: subnetAddressPrefix
+    displayName: 'Subnet Address Prefix'
+    type: string
+    default: '10.240.1.0/24'
+  - name: adGroupNames
+    type: object
+    default: 
+      'demo-group'
+  - name: resourceGroupName
+    type: string
+    default: 
+        'aks-rg' # make it dynamic for different environment.
+
+variables: 
+ - template: ../vars.yml
+
+stages:
+- stage: DeployAksInfra
+  displayName: Deploy Aks Infrastructure
+  jobs:
+  - job: PrepareParametersValue
+    steps:
+    - task: DownloadSecureFile@1
+      displayName: 'Download Public SSH Key'
+      name: SSHfile
+      inputs:
+        secureFile: 'aksKey.pub'
+
+    - task: PowerShell@2
+      name: SetPubSShKey
+      displayName: Obtain SSH key value
+      inputs:
+        targetType: 'inline'
+        script: |
+          $value = Get-Content -Path "$(SSHfile.secureFilePath)" -Raw
+          Write-Host "##vso[task.setvariable variable=publicsshKey;isOutput=true]$value"
+          Write-Host "SSH public key: $value"
+
+    - task: AzureCLI@2
+      name: SetAdGroupIds
+      displayName: 'Get AD Group Object Ids'
+      inputs:
+        azureSubscription: ${{ parameters.azureSubscription }}
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |    
+          Write-Host "Script running as: $([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+          $objectIds = '55eeecf4-9464-4167-be4b-7c967a562df2'
+          $output = ConvertTo-Json -Compress @($objectIds)
+          Write-Host "##vso[task.setvariable variable=groupIds;isOutput=true]$output"
+
+  - job: PrepareParametersAndDeploy
+    dependsOn: PrepareParametersValue
+    variables:
+        publicSSHKey: $[ dependencies.PrepareParametersValue.outputs['SetPubSShKey.publicsshKey'] ]
+        groupIds: $[ dependencies.PrepareParametersValue.outputs['SetAdGroupIds.groupIds'] ]
+
+    steps:
+    - template: objectparameters.yml
+      parameters:
+        tags: ${{ parameters.tags }}
+        vnetAddressPrefixes: ${{ parameters.vnetAddressPrefixes }}
+
+    - template: parameters.yml
+      parameters:
+        env: ${{ parameters.env }}
+        clusterName: ${{ parameters.clusterName }}
+        nodeVmSize: ${{ parameters.nodeVmSize }}
+        osDiskSizeGB: ${{ parameters.osDiskSizeGB }}
+        nodeCount: ${{ parameters.minNodeCount }}
+        maxNodeCount: ${{ parameters.maxNodeCount }}
+        nodeAdminUsername: ${{ parameters.nodeAdminUsername }}
+        publicsshKey: $(publicsshKey)
+        workspaceTier: ${{ parameters.workspaceTier }}
+        subnetAddressPrefix: ${{ parameters.subnetAddressPrefix }}
+        adminGroupObjectIDs: $(groupIds)
+        appGatewayTier: ${{ variables.appGatewayTier }}
+        publicipTier: ${{ variables.publicipTier }}
+        systemNodePoolName: ${{ variables.systemNodePoolName }}
+        userNodePoolName: ${{ variables.userNodePoolName }}
+
+    - task: FileTransform@2
+      displayName: "Transform: Generate deploy.parameters.json"
+      inputs:
+        folderPath: '$(System.DefaultWorkingDirectory)/ci/Aks deployment'
+        xmlTransformationRules: ''
+        jsonTargetFiles: 'deploy.parameters.json'
+
+    - task: PowerShell@2
+      displayName: 'Deploy AKS Cluster'
+      inputs:
+        targetType: 'inline'
+        script: |
+          # Create the resource group
+          az group create --name "${{ parameters.resourceGroupName }}" --location "${{ parameters.location }}"
+
+          # Deploy the AKS cluster using Bicep template and parameters
+          az deployment group create `
+            --name "${{ parameters.clusterName }}-deploy" `
+            --resource-group "${{ parameters.resourceGroupName }}" `
+            --template-file "$(System.DefaultWorkingDirectory)\ci\Aks deployment\deploy.bicep" `
+            --parameters "$(System.DefaultWorkingDirectory)\ci\Aks deployment\deploy.parameters.json" `
+            --verbose

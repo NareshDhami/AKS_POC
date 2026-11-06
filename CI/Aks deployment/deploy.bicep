@@ -203,7 +203,7 @@ module aks 'aks.bicep' = {
 module registry 'registry.bicep' = {
   name: 'registryDeploy'
   params: {
-    registryName: 'acrndhami'
+    registryName: 'your-acr-name'
     acrPullRoleId: acrPullRoleId
     aksPrincipalId: aks.outputs.aksClusterKubeletidentityObjectId
     tags: tags
@@ -227,4 +227,3 @@ module roleAssignment 'roleassignment.bicep' = {
     identity
   ]
 }
-

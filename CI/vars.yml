@@ -3,7 +3,7 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '2256761e-2d61-42e5-af55-9c6e1c357c51'
   imageRepository: '$(microservice)-dev' # microservice is defined in the pipeline.
-  containerRegistry: 'acrndhami.azurecr.io'
+  containerRegistry: 'your-acr-name.azurecr.io'
   dockerfilePath: '$(microservice)/Dockerfile'
   tag: 'v$(Build.BuildId)'
   env: dev

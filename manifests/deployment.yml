@@ -1,19 +1,19 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: acrndhamiazurecriouiv447 
+  name: your-image-name
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: acrndhamiazurecriouiv447
+      app: your-image-name
   template:
     metadata:
       labels:
-        app: acrndhamiazurecriouiv447 
+        app: your-image-name
     spec:
       containers:
-        - name: acrndhamiazurecriouiv447 
-          image: acrndhami.azurecr.io/acrndhamiazurecriouiv447
+        - name: your-image-name
+          image: your-acr-name.azurecr.io/your-image-name
           ports:
           - containerPort: 3000
